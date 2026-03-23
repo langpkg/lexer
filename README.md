@@ -20,8 +20,8 @@
     <img src="https://img.shields.io/badge/~2.5x-Faster-blue"/>
     <br>
     <img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage" />
-    <img src="https://img.shields.io/github/issues/repo-example/lib?style=flat" alt="Github Repo Issues" />
-    <img src="https://img.shields.io/github/stars/repo-example/lib?style=social" alt="GitHub Repo stars" />
+    <img src="https://img.shields.io/github/issues/langpkg/lexer?style=flat" alt="Github Repo Issues" />
+    <img src="https://img.shields.io/github/stars/langpkg/lexer?style=social" alt="GitHub Repo stars" />
 </div>
 <br>
 
