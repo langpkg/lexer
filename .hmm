@@ -1,0 +1,23 @@
+{
+	"type"              : "lib",
+	"template"          : "clean",
+	"pm"                : "bun",
+	"repo": {
+		"org"           : "langpkg",
+		"name"          : "lexer",
+		"version"       : "0.0.1",
+		"desc"          : "A fast, minimal, and robust lexer/tokenizer for your programming language.",
+		"kw"            : ["language", "package", "lexer"],
+		"license"       : "MIT",
+		"issues"        : "https://github.com/langpkg/lexer/issues",
+		"homepage"      : "https://github.com/langpkg/lexer#readme",
+		"git_url"       : "git+https://github.com/langpkg/lexer.git"
+	},
+	"author": {
+		"id"            : "maysara-elshewehy",
+		"name"          : "Maysara Elshewehy",
+		"email"         : "maysara.elshewehy@gmail.com",
+		"url"           : "https://github.com/maysara-elshewehy"
+	},
+	"createdAt"         : "2026-03-20T04:07:21.744Z"
+}
