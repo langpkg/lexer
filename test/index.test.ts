@@ -97,7 +97,6 @@
         test('newline', () => {
             const toks = lexFull(jsLexer, '\n');
             expect(toks[0].type).toBe('NL');
-            expect(toks[0].lineBreaks).toBe(1);
         });
 
         test('line comment', () => {
@@ -365,7 +364,6 @@
             expect(t).toHaveProperty('value');
             expect(t).toHaveProperty('text');
             expect(t).toHaveProperty('span');
-            expect(t).toHaveProperty('lineBreaks');
         });
 
         test('toString() returns value', () => {

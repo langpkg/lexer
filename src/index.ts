@@ -24,8 +24,7 @@
         readonly text       : string
         /** Byte span of the match. */
         readonly span       : Span
-        /** Number of newlines in the match. Always 0 unless the rule sets lineBreaks: true. */
-        readonly lineBreaks : number
+
         toString()          : string
     }
 
@@ -488,7 +487,6 @@
                 text,
                 toString    : tokenToString,
                 span        : { start: offset, end: offset + text.length },
-                lineBreaks,
             };
 
             this._pos += text.length;

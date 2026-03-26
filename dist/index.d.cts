@@ -15,8 +15,6 @@ interface Token {
     readonly text: string;
     /** Byte span of the match. */
     readonly span: Span;
-    /** Number of newlines in the match. Always 0 unless the rule sets lineBreaks: true. */
-    readonly lineBreaks: number;
     toString(): string;
 }
 /** Saved position -- pass to reset() to resume from a checkpoint. */
