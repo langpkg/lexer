@@ -140,20 +140,8 @@
 
           // error recovery -- returns an error token instead of throwing
           ERR   : { error: true },
-        }, { kw_ends_with_token: true })
+        })
         ```
-
-        **Options:**
-
-        - `kw_ends_with_token` (boolean, optional):
-
-            > When enabled, keywords matched via `keywords()` only match if followed by a non-identifier character or EOF.
-            >
-            > This prevents keywords from matching in the middle of identifiers.
-
-            > For example, with this option enabled, the text `"assert"` won't be split into the keyword `"as"` + identifier `"sert"`.
-            >
-            > Default is `false`.
 
         **Matching priority:**
 
@@ -180,54 +168,6 @@
                 }),
             },
         })
-        ```
-
-        <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> </div>
-        <br>
-
-      - #### `kw_ends_with_token` Option
-
-        > When enabled via `compile(spec, { kw_ends_with_token: true })`, keywords only match if followed by a non-identifier character or EOF.
-        >
-        > This is useful for languages where keywords like `"as"` should not split identifiers like `"assert"` into `"as"` + `"sert"`.
-
-        **Without the option** (default behavior):
-        ```ts
-        const lexer = compile({
-            IDENT: { match: /[a-zA-Z_][a-zA-Z0-9_]*/, type: keywords({ KW: ['as'] }) },
-        });
-        // Input: "assert"  →  Token type: IDENT (full identifier, "as" not matched as keyword)
-        // Input: "as"      →  Token type: KW
-        ```
-
-        **With the option enabled**:
-        ```ts
-        const lexer = compile(
-            {
-                IDENT: { match: /[a-zA-Z_][a-zA-Z0-9_]*/, type: keywords({ KW: ['as'] }) },
-            },
-            { kw_ends_with_token: true }
-        );
-        // Input: "assert"   →  Token type: IDENT (keyword doesn't match, next char is 's')
-        // Input: "as"       →  Token type: KW (EOF after keyword, match is valid)
-        // Input: "as x"     →  Token types: KW, WS, IDENT (space after keyword, match is valid)
-        ```
-
-        **Real-world example** (Zig language):
-        ```ts
-        const zigLexer = compile(
-            {
-                AT: '@',
-                IDENT: {
-                    match: /[a-zA-Z_][a-zA-Z0-9_]*/,
-                    type: keywords({ KW: ['assert', 'as', 'if', 'else'] })
-                },
-                WS: /[ \t]+/,
-            },
-            { kw_ends_with_token: true }
-        );
-        zigLexer.reset('@assert');
-        // Tokens: AT("@"), KW("assert") — not split into AT + KW("as") + IDENT("sert")
         ```
 
         <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> </div>
