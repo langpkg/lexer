@@ -1,6 +1,6 @@
 {
 	"name"                             : "@langpkg/lexer",
-	"version"                          : "0.1.2",
+	"version"                          : "0.1.3",
 	"description"                      : "A fast, minimal, and robust lexer/tokenizer for your programming language.",
 	"keywords"                         : ["language", "package", "lexer"],
 	"license"                          : "MIT",
