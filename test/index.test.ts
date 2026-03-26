@@ -20,7 +20,7 @@
         lexer.reset(src);
         const out: string[] = [];
         let t: Token | undefined;
-        while ((t = lexer.next()) !== undefined) out.push(`${t.type}:${t.value}`);
+        while ((t = lexer.next()) !== undefined) out.push(`${t.type}:${t.text}`);
         return out;
     }
 
@@ -264,9 +264,9 @@
     describe('span tracking', () => {
         test('span.start tracks byte position', () => {
             const toks = lexFull(jsLexer, 'ab cd');
-            expect(toks[0]).toMatchObject({ type: 'IDENT', value: 'ab', span: { start: 0, end: 2 } });
-            expect(toks[1]).toMatchObject({ type: 'WS', value: ' ', span: { start: 2, end: 3 } });
-            expect(toks[2]).toMatchObject({ type: 'IDENT', value: 'cd', span: { start: 3, end: 5 } });
+            expect(toks[0]).toMatchObject({ type: 'IDENT', text: 'ab', span: { start: 0, end: 2 } });
+            expect(toks[1]).toMatchObject({ type: 'WS', text: ' ', span: { start: 2, end: 3 } });
+            expect(toks[2]).toMatchObject({ type: 'IDENT', text: 'cd', span: { start: 3, end: 5 } });
         });
 
         test('span tracks byte range correctly', () => {
@@ -308,14 +308,14 @@
             jsLexer.reset('x', state);
             const t = jsLexer.next()!;
             expect(t.span.start).toBe(0);
-            expect(t.value).toBe('x');
+            expect(t.text).toBe('x');
         });
 
         test('reset without state starts at line 1 col 1', () => {
             jsLexer.reset('x');
             const t = jsLexer.next()!;
             expect(t.span.start).toBe(0);
-            expect(t.value).toBe('x');
+            expect(t.text).toBe('x');
         });
 
         test('reset mid-stream restarts from beginning', () => {
@@ -323,7 +323,7 @@
             jsLexer.next();
             jsLexer.reset('xyz');
             const t = jsLexer.next()!;
-            expect(t.value).toBe('xyz');
+            expect(t.text).toBe('xyz');
             expect(t.span.start).toBe(0);
         });
     });
@@ -361,22 +361,15 @@
             jsLexer.reset('42');
             const t = jsLexer.next()!;
             expect(t).toHaveProperty('type');
-            expect(t).toHaveProperty('value');
             expect(t).toHaveProperty('text');
             expect(t).toHaveProperty('span');
         });
 
-        test('toString() returns value', () => {
+        test('toString() returns text', () => {
             jsLexer.reset('42');
             const t = jsLexer.next()!;
             expect(t.toString()).toBe('42');
             expect(String(t)).toBe('42');
-        });
-
-        test('text and value are identical without a value transform', () => {
-            jsLexer.reset('"hello"');
-            const t = jsLexer.next()!;
-            expect(t.text).toBe(t.value);
         });
     });
 
@@ -391,8 +384,7 @@
             });
             lex2.reset('"hello"');
             const t = lex2.next()!;
-            expect(t.value).toBe('hello');
-            expect(t.text).toBe('"hello"');
+            expect(t.text).toBe('hello');
         });
 
         test('value() applies to every match', () => {
@@ -402,8 +394,8 @@
             });
             lex2.reset('3 7');
             const toks = lexFull(lex2, '3 7');
-            expect(toks[0].value).toBe('6');
-            expect(toks[2].value).toBe('14');
+            expect(toks[0].text).toBe('6');
+            expect(toks[2].text).toBe('14');
         });
     });
 
@@ -427,7 +419,7 @@
             lex2.reset('@');
             const t = lex2.next()!;
             expect(t.type).toBe('ERR');
-            expect(t.value).toBe('@');
+            expect(t.text).toBe('@');
         });
 
         test('error token is emitted per unrecognised char', () => {
@@ -439,10 +431,10 @@
             // Each unrecognised char emits one error token, then the next char is tried fresh
             const t1 = lex2.next()!;
             expect(t1.type).toBe('ERR');
-            expect(t1.value).toBe('@');
+            expect(t1.text).toBe('@');
             const t2 = lex2.next()!;
             expect(t2.type).toBe('ERR');
-            expect(t2.value).toBe('@');
+            expect(t2.text).toBe('@');
             expect(lex2.next()).toBeUndefined();
         });
 
@@ -609,8 +601,8 @@
             lex2.reset('héllo wörld');
             const toks = lexFull(lex2, 'héllo wörld');
             expect(toks[0].type).toBe('WORD');
-            expect(toks[0].value).toBe('héllo');
-            expect(toks[2].value).toBe('wörld');
+            expect(toks[0].text).toBe('héllo');
+            expect(toks[2].text).toBe('wörld');
         });
     });
 

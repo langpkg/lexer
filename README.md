@@ -13,7 +13,7 @@
         <b>Up to ~2.5x faster than moo on equivalent specs</b>.
         <br>
     </p>
-    <img data="version" src="https://img.shields.io/badge/v-0.1.1-black"/>
+    <img data="version" src="https://img.shields.io/badge/v-0.1.2-black"/>
     <a href="https://github.com/langpkg"><img src="https://img.shields.io/badge/@-langpkg-black"/></a>
     <br>
     <img src="https://img.shields.io/badge/zero-dependencies-blue"/>
@@ -259,10 +259,9 @@
         | Field        | Type     | Description                                               |
         | ------------ | -------- | --------------------------------------------------------- |
         | `type`       | `string` | Token type name from the spec                             |
-        | `value`      | `string` | Matched text, transformed if `value()` was set            |
-        | `text`       | `string` | Raw matched text, always untransformed                    |
+        | `text`       | `string` | Matched text, transformed if `value()` was set            |
         | `span`       | `Span`   | Byte position range { start, end }                        |
-        | `toString()` |          | Returns `value`                                           |
+        | `toString()` |          | Returns `text`                                            |
 
 
     <br>

@@ -18,13 +18,10 @@
     export interface Token {
         /** Token type name as declared in the rule spec. */
         readonly type       : string
-        /** Matched text -- transformed by value() if supplied, otherwise same as text. */
-        readonly value      : string
-        /** Raw matched text, always untransformed. */
+        /** Matched text, transformed by value() if supplied. */
         readonly text       : string
         /** Byte span of the match. */
         readonly span       : Span
-
         toString()          : string
     }
 
@@ -139,7 +136,7 @@
         return [n, last];
     }
 
-    function tokenToString(this: Token): string { return this.value; }
+    function tokenToString(this: Token): string { return this.text; }
 
     function calculateLineCol(buf: string, offset: number): { line: number; col: number } {
         let line = 1, col = 1;
@@ -483,8 +480,7 @@
 
             const token: Token = {
                 type        : rule.typeXform ? (rule.typeXform(text) ?? rule.type) : rule.type,
-                value       : rule.value ? rule.value(text) : text,
-                text,
+                text        : rule.value ? rule.value(text) : text,
                 toString    : tokenToString,
                 span        : { start: offset, end: offset + text.length },
             };

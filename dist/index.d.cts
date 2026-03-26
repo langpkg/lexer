@@ -9,9 +9,7 @@ interface Span {
 interface Token {
     /** Token type name as declared in the rule spec. */
     readonly type: string;
-    /** Matched text -- transformed by value() if supplied, otherwise same as text. */
-    readonly value: string;
-    /** Raw matched text, always untransformed. */
+    /** Matched text, transformed by value() if supplied. */
     readonly text: string;
     /** Byte span of the match. */
     readonly span: Span;
