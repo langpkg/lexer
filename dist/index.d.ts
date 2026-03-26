@@ -1,3 +1,10 @@
+/** Byte span: start and end positions in the input. */
+interface Span {
+    /** Byte offset from the start of the input. */
+    readonly start: number;
+    /** Byte offset after the match (exclusive). */
+    readonly end: number;
+}
 /** A single token returned by next(). */
 interface Token {
     /** Token type name as declared in the rule spec. */
@@ -6,14 +13,10 @@ interface Token {
     readonly value: string;
     /** Raw matched text, always untransformed. */
     readonly text: string;
-    /** Byte offset from the start of the input. */
-    readonly offset: number;
+    /** Byte span of the match. */
+    readonly span: Span;
     /** Number of newlines in the match. Always 0 unless the rule sets lineBreaks: true. */
     readonly lineBreaks: number;
-    /** 1-based line number at the start of the match. */
-    readonly line: number;
-    /** 1-based column at the start of the match. */
-    readonly col: number;
     toString(): string;
 }
 /** Saved position -- pass to reset() to resume from a checkpoint. */
@@ -128,4 +131,4 @@ declare const _default: {
     keywords: typeof keywords;
 };
 
-export { type KeywordMap, Lexer, type LexerState, type Pattern, type RuleSpec, type RuleValue, type RulesSpec, type Token, type TypeTransform, compile, _default as default, keywords };
+export { type KeywordMap, Lexer, type LexerState, type Pattern, type RuleSpec, type RuleValue, type RulesSpec, type Span, type Token, type TypeTransform, compile, _default as default, keywords };

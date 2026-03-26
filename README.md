@@ -13,7 +13,7 @@
         <b>Up to ~2.5x faster than moo on equivalent specs</b>.
         <br>
     </p>
-    <img data="version" src="https://img.shields.io/badge/v-0.0.2-black"/>
+    <img data="version" src="https://img.shields.io/badge/v-0.1.0-black"/>
     <a href="https://github.com/langpkg"><img src="https://img.shields.io/badge/@-langpkg-black"/></a>
     <br>
     <img src="https://img.shields.io/badge/zero-dependencies-blue"/>
@@ -105,6 +105,17 @@
         <br>
 
     - ### API
+
+      - #### `Span`
+
+        > Represents a byte range in the input.
+
+        ```ts
+        interface Span {
+            start : number  // Byte offset from start of input
+            end   : number  // Byte offset after the match (exclusive)
+        }
+        ```
 
       - #### `compile(spec, options?): Lexer`
 
@@ -250,10 +261,8 @@
         | `type`       | `string` | Token type name from the spec                             |
         | `value`      | `string` | Matched text, transformed if `value()` was set            |
         | `text`       | `string` | Raw matched text, always untransformed                    |
-        | `offset`     | `number` | Byte offset from start of input                           |
+        | `span`       | `Span`   | Byte position range { start, end }                        |
         | `lineBreaks` | `number` | Newlines in match (0 unless rule sets `lineBreaks: true`) |
-        | `line`       | `number` | 1-based line number at match start                        |
-        | `col`        | `number` | 1-based column at match start                             |
         | `toString()` |          | Returns `value`                                           |
 
 

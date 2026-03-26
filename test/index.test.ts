@@ -259,35 +259,34 @@
     });
 
     // ---------------------------------------------------------------------------
-    // 6. Line/col tracking
+    // 6. Byte span tracking
     // ---------------------------------------------------------------------------
 
-    describe('line and col tracking', () => {
-        test('single line -- col advances correctly', () => {
+    describe('span tracking', () => {
+        test('span.start tracks byte position', () => {
             const toks = lexFull(jsLexer, 'ab cd');
-            expect(toks[0]).toMatchObject({ type: 'IDENT', value: 'ab', line: 1, col: 1 });
-            expect(toks[1]).toMatchObject({ type: 'WS', value: ' ', line: 1, col: 3 });
-            expect(toks[2]).toMatchObject({ type: 'IDENT', value: 'cd', line: 1, col: 4 });
+            expect(toks[0]).toMatchObject({ type: 'IDENT', value: 'ab', span: { start: 0, end: 2 } });
+            expect(toks[1]).toMatchObject({ type: 'WS', value: ' ', span: { start: 2, end: 3 } });
+            expect(toks[2]).toMatchObject({ type: 'IDENT', value: 'cd', span: { start: 3, end: 5 } });
         });
 
-        test('newline increments line, resets col', () => {
+        test('span tracks byte range correctly', () => {
+            const toks = lexFull(jsLexer, 'hello');
+            expect(toks[0].span.end - toks[0].span.start).toBe(5);
+        });
+
+        test('span continues correctly across newlines', () => {
             const toks = lexFull(jsLexer, 'a\nb');
-            expect(toks[0]).toMatchObject({ type: 'IDENT', line: 1, col: 1 });
-            expect(toks[1]).toMatchObject({ type: 'NL', line: 1, col: 2 });
-            expect(toks[2]).toMatchObject({ type: 'IDENT', line: 2, col: 1 });
+            expect(toks[0]).toMatchObject({ type: 'IDENT', span: { start: 0, end: 1 } });
+            expect(toks[1]).toMatchObject({ type: 'NL', span: { start: 1, end: 2 } });
+            expect(toks[2]).toMatchObject({ type: 'IDENT', span: { start: 2, end: 3 } });
         });
 
-        test('multiple newlines', () => {
-            // 'a\n\nb' → [IDENT:a, NL, NL, IDENT:b] = indices 0-3
-            const toks = lexFull(jsLexer, 'a\n\nb');
-            expect(toks[3]).toMatchObject({ type: 'IDENT', value: 'b', line: 3, col: 1 });
-        });
-
-        test('offset is always byte position', () => {
-            const toks = lexFull(jsLexer, 'ab cd');
-            expect(toks[0].offset).toBe(0);
-            expect(toks[1].offset).toBe(2);
-            expect(toks[2].offset).toBe(3);
+        test('span.start with non-ASCII characters', () => {
+            const toks = lexFull(jsLexer, 'x y');
+            expect(toks[0].span.start).toBe(0);
+            expect(toks[1].span.start).toBe(1);
+            expect(toks[2].span.start).toBe(2);
         });
     });
 
@@ -309,15 +308,15 @@
             const state: LexerState = { line: 5, col: 3 };
             jsLexer.reset('x', state);
             const t = jsLexer.next()!;
-            expect(t.line).toBe(5);
-            expect(t.col).toBe(3);
+            expect(t.span.start).toBe(0);
+            expect(t.value).toBe('x');
         });
 
         test('reset without state starts at line 1 col 1', () => {
             jsLexer.reset('x');
             const t = jsLexer.next()!;
-            expect(t.line).toBe(1);
-            expect(t.col).toBe(1);
+            expect(t.span.start).toBe(0);
+            expect(t.value).toBe('x');
         });
 
         test('reset mid-stream restarts from beginning', () => {
@@ -326,7 +325,7 @@
             jsLexer.reset('xyz');
             const t = jsLexer.next()!;
             expect(t.value).toBe('xyz');
-            expect(t.offset).toBe(0);
+            expect(t.span.start).toBe(0);
         });
     });
 
@@ -365,10 +364,8 @@
             expect(t).toHaveProperty('type');
             expect(t).toHaveProperty('value');
             expect(t).toHaveProperty('text');
-            expect(t).toHaveProperty('offset');
+            expect(t).toHaveProperty('span');
             expect(t).toHaveProperty('lineBreaks');
-            expect(t).toHaveProperty('line');
-            expect(t).toHaveProperty('col');
         });
 
         test('toString() returns value', () => {

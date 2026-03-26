@@ -6,6 +6,14 @@
 
 // ╔════════════════════════════════════════ TYPE ════════════════════════════════════════╗
 
+    /** Byte span: start and end positions in the input. */
+    export interface Span {
+        /** Byte offset from the start of the input. */
+        readonly start      : number
+        /** Byte offset after the match (exclusive). */
+        readonly end        : number
+    }
+
     /** A single token returned by next(). */
     export interface Token {
         /** Token type name as declared in the rule spec. */
@@ -14,14 +22,10 @@
         readonly value      : string
         /** Raw matched text, always untransformed. */
         readonly text       : string
-        /** Byte offset from the start of the input. */
-        readonly offset     : number
+        /** Byte span of the match. */
+        readonly span       : Span
         /** Number of newlines in the match. Always 0 unless the rule sets lineBreaks: true. */
         readonly lineBreaks : number
-        /** 1-based line number at the start of the match. */
-        readonly line       : number
-        /** 1-based column at the start of the match. */
-        readonly col        : number
         toString()          : string
     }
 
@@ -137,6 +141,15 @@
     }
 
     function tokenToString(this: Token): string { return this.value; }
+
+    function calculateLineCol(buf: string, offset: number): { line: number; col: number } {
+        let line = 1, col = 1;
+        for (let i = 0; i < offset; i++) {
+            if (buf[i] === '\n') { line++; col = 1; }
+            else col++;
+        }
+        return { line, col };
+    }
 
     function makeStickyRE(src: string, unicode: boolean): RegExp {
         return new RegExp('(?:' + src + ')', unicode ? 'yu' : 'y');
@@ -461,7 +474,8 @@
 
         /** Return a human-readable error string with file position. */
         formatError(token: Token, message = 'invalid syntax'): string {
-            return `${message} at line ${token.line} col ${token.col}`;
+            const { line, col } = calculateLineCol(this._buf, token.span.start);
+            return `${message} at line ${line} col ${col}`;
         }
 
         private _emit(rule: CRule, text: string, offset: number): Token {
@@ -473,10 +487,8 @@
                 value       : rule.value ? rule.value(text) : text,
                 text,
                 toString    : tokenToString,
-                offset,
+                span        : { start: offset, end: offset + text.length },
                 lineBreaks,
-                line        : this._line,
-                col         : this._col,
             };
 
             this._pos += text.length;

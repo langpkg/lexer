@@ -5,7 +5,7 @@
 	"repo": {
 		"org"           : "langpkg",
 		"name"          : "lexer",
-		"version"       : "0.0.2",
+		"version"       : "0.1.0",
 		"desc"          : "A fast, minimal, and robust lexer/tokenizer for your programming language.",
 		"kw"            : ["language", "package", "lexer"],
 		"license"       : "MIT",
