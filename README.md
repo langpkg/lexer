@@ -13,7 +13,7 @@
         <b>Up to ~2.5x faster than moo on equivalent specs</b>.
         <br>
     </p>
-    <img data="version" src="https://img.shields.io/badge/v-0.1.4-black"/>
+    <img data="version" src="https://img.shields.io/badge/v-0.1.5-black"/>
     <a href="https://github.com/langpkg"><img src="https://img.shields.io/badge/@-langpkg-black"/></a>
     <br>
     <img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage" />
