@@ -6,77 +6,55 @@
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import { describe, test, expect } from 'bun:test';
-    import { compile, keywords, Lexer, type Token, type LexerState } from '../src/index.js';
+    import { compile, keywords, Lexer, type Token,
+             type LexerState }           from '../src/index.js';
+
+    import { describe, test, expect }    from 'bun:test';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
 
 
-// ╔════════════════════════════════════════ HELP ════════════════════════════════════════╗
+// ╔═══════════════════════════════════════ CONST ════════════════════════════════════════╗
 
-    /** Lex `src` and return array of `"TYPE:value"` strings. */
-    function lex(lexer: Lexer, src: string): string[] {
-        lexer.reset(src);
-        const out: string[] = [];
-        let t: Token | undefined;
-        while ((t = lexer.next()) !== undefined) out.push(`${t.type}:${t.text}`);
-        return out;
-    }
-
-    /** Lex `src` and return full Token objects. */
-    function lexFull(lexer: Lexer, src: string): Token[] {
-        lexer.reset(src);
-        const out: Token[] = [];
-        let t: Token | undefined;
-        while ((t = lexer.next()) !== undefined) out.push(t);
-        return out;
-    }
-
-// ╚══════════════════════════════════════════════════════════════════════════════════════╝
-
-
-
-// ╔════════════════════════════════════════ INIT ════════════════════════════════════════╗
-
-    const jsLexer = compile({
-        WS: /[ \t\r]+/,
-        NL: { match: /\n/, lineBreaks: true },
-        COMMENT: /\/\/[^\n]*/,
-        NUMBER: /0|[1-9][0-9]*/,
-        STRING: { match: /"(?:\\.|[^"\\])*"/, lineBreaks: false },
-        IDENT: {
-            match: /[a-zA-Z_$][a-zA-Z0-9_$]*/, type: keywords({
-                KW: ['if', 'else', 'while', 'for', 'return', 'function', 'const', 'let', 'var'],
+    const jsLexer     = compile({
+        WS            : /[ \t\r]+/,
+        NL            : { match: /\n/, lineBreaks: true },
+        COMMENT       : /\/\/[^\n]*/,
+        NUMBER        : /0|[1-9][0-9]*/,
+        STRING        : { match: /"(?:\\.|[^"\\])*"/, lineBreaks: false },
+        IDENT         : {
+            match     : /[a-zA-Z_$][a-zA-Z0-9_$]*/, type: keywords({
+                KW    : ['if', 'else', 'while', 'for', 'return', 'function', 'const', 'let', 'var'],
             })
         },
-        // multi-char operators -- same first char stress test
-        EQ3: '===',
-        NEQ: '!==',
-        ARROW: '=>',
-        GTE: '>=',
-        LTE: '<=',
-        AND: '&&',
-        OR: '||',
+        // multi-char operators - same first char stress test
+        EQ3           : '===',
+        NEQ           : '!==',
+        ARROW         : '=>',
+        GTE           : '>=',
+        LTE           : '<=',
+        AND           : '&&',
+        OR            : '||',
         // single-char operators / punctuation
-        ASSIGN: '=',
-        PLUS: '+',
-        MINUS: '-',
-        STAR: '*',
-        SLASH: '/',
-        BANG: '!',
-        GT: '>',
-        LT: '<',
-        LPAREN: '(',
-        RPAREN: ')',
-        LBRACE: '{',
-        RBRACE: '}',
-        LBRACK: '[',
-        RBRACK: ']',
-        SEMI: ';',
-        COMMA: ',',
-        DOT: '.',
-        COLON: ':',
+        ASSIGN        : '=',
+        PLUS          : '+',
+        MINUS         : '-',
+        STAR          : '*',
+        SLASH         : '/',
+        BANG          : '!',
+        GT            : '>',
+        LT            : '<',
+        LPAREN        : '(',
+        RPAREN        : ')',
+        LBRACE        : '{',
+        RBRACE        : '}',
+        LBRACK        : '[',
+        RBRACK        : ']',
+        SEMI          : ';',
+        COMMA         : ',',
+        DOT           : '.',
+        COLON         : ':',
     });
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
@@ -127,7 +105,7 @@
     });
 
     // ---------------------------------------------------------------------------
-    // 2. Multi-char operators -- same-first-char disambiguation
+    // 2. Multi-char operators - same-first-char disambiguation
     // ---------------------------------------------------------------------------
 
     describe('same-first-char disambiguation', () => {
@@ -172,7 +150,7 @@
     });
 
     // ---------------------------------------------------------------------------
-    // 3. Comment vs division -- regex rule before single-char literal
+    // 3. Comment vs division - regex rule before single-char literal
     // ---------------------------------------------------------------------------
 
     describe('comment vs slash', () => {
@@ -290,7 +268,7 @@
     });
 
     // ---------------------------------------------------------------------------
-    // 7. save() / reset() -- checkpoint / resume
+    // 7. save() / reset() - checkpoint / resume
     // ---------------------------------------------------------------------------
 
     describe('save and reset', () => {
@@ -579,7 +557,7 @@
             let count = 0;
             while (jsLexer.next() !== undefined) count++;
 
-            // run again -- must be identical
+            // run again - must be identical
             jsLexer.reset(src);
             let count2 = 0;
             while (jsLexer.next() !== undefined) count2++;
@@ -605,5 +583,29 @@
             expect(toks[2].text).toBe('wörld');
         });
     });
+
+// ╚══════════════════════════════════════════════════════════════════════════════════════╝
+
+
+
+// ╔════════════════════════════════════════ HELP ════════════════════════════════════════╗
+
+    /** Lex `src` and return array of `"TYPE:value"` strings. */
+    function lex(lexer: Lexer, src: string): string[] {
+        lexer.reset(src);
+        const out: string[] = [];
+        let t: Token | undefined;
+        while ((t = lexer.next()) !== undefined) out.push(`${t.type}:${t.text}`);
+        return out;
+    }
+
+    /** Lex `src` and return full Token objects. */
+    function lexFull(lexer: Lexer, src: string): Token[] {
+        lexer.reset(src);
+        const out: Token[] = [];
+        let t: Token | undefined;
+        while ((t = lexer.next()) !== undefined) out.push(t);
+        return out;
+    }
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝

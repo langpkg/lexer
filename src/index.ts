@@ -1,4 +1,4 @@
-// @langpkg/lexer
+// src/index.ts
 //
 // Made with ❤️ by Maysara.
 
@@ -9,71 +9,71 @@
     /** Byte span: start and end positions in the input. */
     export interface Span {
         /** Byte offset from the start of the input. */
-        readonly start      : number
+        readonly start       : number
         /** Byte offset after the match (exclusive). */
-        readonly end        : number
+        readonly end         : number
     }
 
     /** A single token returned by next(). */
     export interface Token {
         /** Token type name as declared in the rule spec. */
-        readonly type       : string
+        readonly type        : string
         /** Matched text, transformed by value() if supplied. */
-        readonly text       : string
+        readonly text        : string
         /** Byte span of the match. */
-        readonly span       : Span
+        readonly span        : Span
         toString()          : string
     }
 
-    /** Saved position -- pass to reset() to resume from a checkpoint. */
+    /** Saved position - pass to reset() to resume from a checkpoint. */
     export interface LexerState {
-        readonly line       : number
-        readonly col        : number
+        readonly line        : number
+        readonly col         : number
     }
 
     /** Keyword-to-type map for keywords(). */
     export type KeywordMap = Record<string, string | string[]>;
 
     /**
-     * Type-transform function.
-     * Return a string to override the token type,
-     * or undefined to keep the rule's declared type.
-     */
+    * Type-transform function.
+    * Return a string to override the token type,
+    * or undefined to keep the rule's declared type.
+    */
     export type TypeTransform = (text: string) => string | undefined;
 
     /** Full object form of a rule. */
     export interface RuleSpec {
         /** One or more patterns. Strings are exact literals; RegExps are patterns. */
-        match               : Pattern | Pattern[]
+        match                : Pattern | Pattern[]
         /** Required if the pattern can match a newline. The lexer validates this at compile time. */
-        lineBreaks?         : boolean
+        lineBreaks?          : boolean
         /** Emit an error token instead of throwing when this rule matches. */
-        error?              : boolean
+        error?               : boolean
         /** Transform matched text before storing in token.value. */
-        value?              : (text: string) => string
+        value?               : (text: string) => string
         /** Override the token type. Pass keywords({...}) here. */
-        type?               : TypeTransform
+        type?                : TypeTransform
     }
 
     /** Anything accepted as a rule value in the spec. */
     export type RuleValue =
-        | Pattern
-        | Pattern[]
-        | RuleSpec
-        | (Pattern | RuleSpec)[];
+    | Pattern
+    | Pattern[]
+    | RuleSpec
+    | (Pattern | RuleSpec)[];
 
     /** A string literal or RegExp pattern. */
     export type Pattern = string | RegExp;
 
     /**
-     * The spec object passed to compile().
-     * Keys are token-type names; values describe what to match.
-     *
-     * Matching priority:
-     *   1. Longer string literals always beat shorter ones ('===' > '=>' > '=').
-     *   2. Among rules that share the same first character, RegExp rules run in
-     *      declaration order after all string literals.
-     */
+    * The spec object passed to compile().
+    * Keys are token-type names; values describe what to match.
+    *
+    * Matching priority:
+    *   1. Longer string literals always beat shorter ones ('===' > '=>' > '=').
+    *   2. Among rules that share the same first character, RegExp rules run in
+    *      declaration order after all string literals.
+    */
     export type RulesSpec = Record<string, RuleValue>;
 
     // ---------------------------------------------------------------------------
@@ -81,33 +81,33 @@
     // ---------------------------------------------------------------------------
 
     interface CRule {
-        readonly type           : string
-        readonly re             : RegExp | null
-        readonly lineBreaks     : boolean
-        readonly error          : boolean
-        readonly shouldThrow    : boolean
-        readonly value          : ((s: string) => string) | null
-        readonly typeXform      : TypeTransform | null
+        readonly type        : string
+        readonly re          : RegExp | null
+        readonly lineBreaks  : boolean
+        readonly error       : boolean
+        readonly shouldThrow : boolean
+        readonly value       : ((s: string) => string) | null
+        readonly typeXform   : TypeTransform | null
     }
 
     /**
-     * One dispatch slot per ASCII charCode.
-     *
-     * fast: when exactly one candidate exists, re0/rule0 are set.
-     *       next() uses them directly, skipping the loop.
-     * slow: when 2+ candidates exist (e.g. '===', '=>', '='),
-     *       candidates[] is tried in order.
-     */
+    * One dispatch slot per ASCII charCode.
+    *
+    * fast: when exactly one candidate exists, re0/rule0 are set.
+    *       next() uses them directly, skipping the loop.
+    * slow: when 2+ candidates exist (e.g. '===', '=>', '='),
+    *       candidates[] is tried in order.
+    */
     interface Slot {
-        readonly re0            : RegExp | null | undefined // undefined = use slow path
-        readonly rule0          : CRule | undefined
-        readonly candidates     : readonly { re: RegExp | null; rule: CRule }[]
+        readonly re0         : RegExp | null | undefined // undefined = use slow path
+        readonly rule0       : CRule | undefined
+        readonly candidates  : readonly { re: RegExp | null; rule: CRule }[]
     }
 
     interface DispatchTable {
-        readonly slots          : readonly (Slot | null)[]  // indexed by charCode 0–127
-        readonly highSlot       : Slot | null               // charCode >= 128
-        readonly errorRule      : CRule
+        readonly slots       : readonly (Slot | null)[]  // indexed by charCode 0–127
+        readonly highSlot    : Slot | null               // charCode >= 128
+        readonly errorRule   : CRule
     }
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
@@ -157,14 +157,14 @@
         if (re.sticky)          throw new Error(`Rule '${typeName}': /y flag is implied`);
         if (re.multiline)       throw new Error(`Rule '${typeName}': /m flag is implied`);
         if (new RegExp('|' + re.source).exec('')!.length > 1)
-            throw new Error(`Rule '${typeName}': RegExp has capture groups -- use (?:…) instead`);
+        throw new Error(`Rule '${typeName}': RegExp has capture groups - use (?:…) instead`);
     }
 
     // ---------------------------------------------------------------------------
     // Probe cache
     //
     // Maps '<u:>regex.source' → which ASCII charCodes can start this pattern.
-    // Shared across all compile() calls -- common patterns like /[a-z]+/ are
+    // Shared across all compile() calls - common patterns like /[a-z]+/ are
     // probed once ever, not once per compile().
     // ---------------------------------------------------------------------------
 
@@ -192,8 +192,8 @@
 
         probe.lastIndex = 0;
         result.high =
-            probe.test('\u00e9\u00e9\u00e9' + _ALNUMS) ||
-            probe.test('\u4e2d\u4e2d\u4e2d' + _ALNUMS);
+        probe.test('\u00e9\u00e9\u00e9' + _ALNUMS) ||
+        probe.test('\u4e2d\u4e2d\u4e2d' + _ALNUMS);
 
         _probeCache.set(key, result);
         return result;
@@ -226,14 +226,14 @@
 
     // CRules with per-rule sticky regex
     function compileEntries(
-        entries: { typeName: string; s: RuleSpec }[],
-        unicode: boolean,
+    entries: { typeName: string; s: RuleSpec }[],
+    unicode: boolean,
     ): { rule: CRule; pats: Pattern[] }[] {
         return entries.map(({ typeName, s }) => {
             const pats: Pattern[] =
-                s.error && !s.match
-                    ? []
-                    : (Array.isArray(s.match) ? s.match : [s.match]) as Pattern[];
+            s.error && !s.match
+            ? []
+            : (Array.isArray(s.match) ? s.match : [s.match]) as Pattern[];
 
             for (const p of pats) if (isRE(p)) validateRE(p, typeName);
 
@@ -243,8 +243,8 @@
 
             if (multiPats.length > 0) {
                 const sorted = [...multiPats].sort((a, b) =>
-                    typeof a === 'string' && typeof b === 'string' ? b.length - a.length
-                        : isRE(a) ? 1 : isRE(b) ? -1 : 0
+                typeof a === 'string' && typeof b === 'string' ? b.length - a.length
+                : isRE(a) ? 1 : isRE(b) ? -1 : 0
                 );
                 const src = sorted.map(p => typeof p === 'string' ? reEscape(p) : p.source).join('|');
                 re = makeStickyRE(src, unicode);
@@ -273,7 +273,7 @@
                     }
                     if (hasNL) {
                         re.lastIndex = 0;
-                        throw new Error(`Rule '${typeName}': can match \\n -- set lineBreaks: true`);
+                        throw new Error(`Rule '${typeName}': can match \\n - set lineBreaks: true`);
                     }
                 }
                 re.lastIndex = 0;
@@ -294,8 +294,8 @@
 
     // DispatchTable
     function buildTable(
-        compiled: { rule: CRule; pats: Pattern[] }[],
-        unicode: boolean,
+    compiled: { rule: CRule; pats: Pattern[] }[],
+    unicode: boolean,
     ): DispatchTable {
         interface Accum {
             A: { len: number; lit: string; rule: CRule }[]  // multi-char literals
@@ -344,17 +344,17 @@
             // Phase A: multi-char literals, longest first
             a.A.sort((x, y) => y.len - x.len);
             for (const { lit, rule } of a.A)
-                cands.push({ re: makeStickyRE(reEscape(lit), unicode), rule });
+            cands.push({ re: makeStickyRE(reEscape(lit), unicode), rule });
 
             // Phase B: regex rules in declaration order
             for (const rule of a.B)
-                cands.push({ re: rule.re!, rule });
+            cands.push({ re: rule.re!, rule });
 
             // Phase C: single-char fallback (no regex needed)
             if (a.C) cands.push({ re: null, rule: a.C });
 
             if (cands.length === 1)
-                return { re0: cands[0].re, rule0: cands[0].rule, candidates: cands };
+            return { re0: cands[0].re, rule0: cands[0].rule, candidates: cands };
 
             return { re0: undefined, rule0: undefined, candidates: cands };
         };
@@ -391,16 +391,16 @@
 // ╔════════════════════════════════════════ MAIN ════════════════════════════════════════╗
 
     /**
-     * Build a type-transform that remaps matched identifiers to keyword types.
-     * Ensures the longest-match principle -- 'className' will never be split
-     * into 'class' + 'Name'.
-     */
+    * Build a type-transform that remaps matched identifiers to keyword types.
+    * Ensures the longest-match principle - 'className' will never be split
+    * into 'class' + 'Name'.
+    */
     export function keywords(map: KeywordMap): TypeTransform {
         const lookup = new Map<string, string>();
         for (const t of Object.getOwnPropertyNames(map)) {
             for (const kw of ([] as string[]).concat(map[t])) {
                 if (typeof kw !== 'string')
-                    throw new Error(`keywords(): value must be a string (in '${t}')`);
+                throw new Error(`keywords(): value must be a string (in '${t}')`);
                 lookup.set(kw, t);
             }
         }
@@ -410,19 +410,19 @@
     /** A compiled lexer. Create one with compile(). */
     export class Lexer {
         private readonly _dt    : DispatchTable;
-        private _buf            : string = '';
-        private _pos            : number = 0;
-        private _line           : number = 1;
-        private _col            : number = 1;
+        private _buf             = '';
+        private _pos             = 0;
+        private _line            = 1;
+        private _col             = 1;
 
         /** @internal */
         constructor(dt: DispatchTable) { this._dt = dt; }
 
         /**
-         * Load new input.
-         * Optionally pass a LexerState from save() to resume from a checkpoint.
-         * Returns `this` so you can chain: lexer.reset(src).next()
-         */
+        * Load new input.
+        * Optionally pass a LexerState from save() to resume from a checkpoint.
+        * Returns `this` so you can chain: lexer.reset(src).next()
+        */
         reset(input = '', state?: LexerState): this {
             this._buf   = input;
             this._pos   = 0;
@@ -448,7 +448,7 @@
 
             if (!slot) return this._emit(errorRule, buf[pos], pos);
 
-            // fast path -- single candidate, no loop
+            // fast path - single candidate, no loop
             if (slot.rule0 !== undefined) {
                 const re = slot.re0!;
                 const rule = slot.rule0;
@@ -458,7 +458,7 @@
                 return this._emit(errorRule, buf[pos], pos);
             }
 
-            // slow path -- try candidates in order
+            // slow path - try candidates in order
             for (const { re, rule } of slot.candidates) {
                 if (re === null) return this._emit(rule, buf[pos], pos);
                 re.lastIndex = pos;
@@ -494,19 +494,19 @@
             }
 
             if (rule.shouldThrow)
-                throw new Error(this.formatError(token, 'invalid syntax'));
+            throw new Error(this.formatError(token, 'invalid syntax'));
 
             return token;
         }
     }
 
     /**
-     * Compile a rule spec into a Lexer.
-     *
-     * Rules are matched in declaration order.
-     * String literals always beat shorter ones ('===' wins over '=' regardless of order).
-     * RegExp rules for the same first character run in declaration order.
-     */
+    * Compile a rule spec into a Lexer.
+    *
+    * Rules are matched in declaration order.
+    * String literals always beat shorter ones ('===' wins over '=' regardless of order).
+    * RegExp rules for the same first character run in declaration order.
+    */
     export function compile(spec: RulesSpec): Lexer {
         const entries = flattenSpec(spec);
         const unicode = entries.some(({ s }) => {

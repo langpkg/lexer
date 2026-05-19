@@ -1,4 +1,4 @@
-<!-- ╔══════════════════════════════ BEG ══════════════════════════════╗ -->
+<!-- ╔═══════════════════════════ BEG ════════════════════════════╗ -->
 
 <br>
 <div align="center">
@@ -13,11 +13,8 @@
         <b>Up to ~2.5x faster than moo on equivalent specs</b>.
         <br>
     </p>
-    <img data="version" src="https://img.shields.io/badge/v-0.1.3-black"/>
+    <img data="version" src="https://img.shields.io/badge/v-0.1.4-black"/>
     <a href="https://github.com/langpkg"><img src="https://img.shields.io/badge/@-langpkg-black"/></a>
-    <br>
-    <img src="https://img.shields.io/badge/zero-dependencies-blue"/>
-    <img src="https://img.shields.io/badge/~2.5x-Faster-blue"/>
     <br>
     <img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage" />
     <img src="https://img.shields.io/github/issues/langpkg/lexer?style=flat" alt="Github Repo Issues" />
@@ -25,30 +22,18 @@
 </div>
 <br>
 
-<!-- ╚═════════════════════════════════════════════════════════════════╝ -->
+<!-- ╚════════════════════════════════════════════════════════════╝ -->
 
 
 
-<!-- ╔══════════════════════════════ DOC ══════════════════════════════╗ -->
-
-- ## Benchmark
-
-    ![bench](./assets/img/bench.png)
-
-    > _**To run the benchmark, use: `bun run bench`**_
-
-    > _**To check the benchmark code, read: [`./bench/index.bench.ts`](./bench/index.bench.ts).**_
-
-    <br>
-    <br>
-
+<!-- ╔═══════════════════════════ DOC ════════════════════════════╗ -->
 
 - ## Quick Start 🔥
 
+    > Install [pkg](https://github.com/langpkg/pkg) first.
+
     ```bash
-    bun add @langpkg/lexer
-    # or
-    npm install @langpkg/lexer
+    pkg i @langpkg/lexer
     ```
 
     ```ts
@@ -83,6 +68,17 @@
     <br>
     <br>
 
+- ## Benchmark
+
+    ![bench](./assets/img/bench.png)
+
+    > _**To run the benchmark, use: `bun run bench`**_
+
+    > _**To check the benchmark code, read: [`./bench/index.bench.ts`](./bench/index.bench.ts).**_
+
+    <br>
+    <br>
+
 - ## Documentation 📑
 
     - ### How it works
@@ -95,7 +91,7 @@
 
         3. Candidates are tried with `re.test(buf)` (sticky regex, no `exec`, no array allocation).
 
-        4. 94%+ of charCodes have exactly one candidate -- they skip the loop entirely.
+        4. 94%+ of charCodes have exactly one candidate - they skip the loop entirely.
 
         > _**No combined mega-regex. No alternation backtracking.**_
         >
@@ -123,29 +119,29 @@
 
         ```ts
         const lexer = compile({
-          // string literal -- exact match
+          // string literal - exact match
           PLUS  : '+',
 
           // multiple literals for one type
           OP    : ['+=', '+'],
 
-          // RegExp -- no /g /i /y /m flags, no capture groups
+          // RegExp - no /g /i /y /m flags, no capture groups
           NUM   : /[0-9]+/,
 
           // full rule object
           NL    :  { match: /\n/, lineBreaks: true },
 
-          // value transform -- token.value is the stripped version, token.text is raw
+          // value transform - token.value is the stripped version, token.text is raw
           STR   : { match: /"[^"]*"/, value: s => s.slice(1, -1) },
 
-          // error recovery -- returns an error token instead of throwing
+          // error recovery - returns an error token instead of throwing
           ERR   : { error: true },
         })
         ```
 
         **Matching priority:**
 
-        1. Longer string literals always beat shorter ones -- `'==='` beats `'=>'` beats `'='`, regardless of declaration order.
+        1. Longer string literals always beat shorter ones - `'==='` beats `'=>'` beats `'='`, regardless of declaration order.
 
         2. RegExp rules sharing the same first character run in declaration order, after all string literals.
 
@@ -155,7 +151,7 @@
       - #### `keywords(map): TypeTransform`
 
         > Remaps matched identifiers to keyword types.
-        Handles the longest-match edge case correctly -- `className` is never split into `class` + `Name`.
+        Handles the longest-match edge case correctly - `className` is never split into `class` + `Name`.
 
         ```ts
         compile({
@@ -203,24 +199,23 @@
         | `span`       | `Span`   | Byte position range { start, end }                        |
         | `toString()` |          | Returns `text`                                            |
 
-
     <br>
     <br>
 
 - ## Credits ❤️
 
-    > Inspired by [moo](https://github.com/no-context/moo) -- I kept the same
+    > Inspired by [moo](https://github.com/no-context/moo) - I kept the same
     familiar API (`compile`, `keywords`, `reset`, `next`) while replacing the
     internals with a per-character dispatch table and per-rule sticky regexes,
     which eliminates alternation backtracking and gives ~3x better throughput.
 
     > Built as part of the Mine language compiler toolchain.
 
-<!-- ╚═════════════════════════════════════════════════════════════════╝ -->
+<!-- ╚════════════════════════════════════════════════════════════╝ -->
 
 
 
-<!-- ╔══════════════════════════════ END ══════════════════════════════╗ -->
+<!-- ╔═══════════════════════════ END ════════════════════════════╗ -->
 
 <br>
 <br>
@@ -231,4 +226,4 @@
     <a href="https://github.com/maysara-elshewehy"><img src="https://img.shields.io/badge/by-Maysara-black"/></a>
 </div>
 
-<!-- ╚═════════════════════════════════════════════════════════════════╝ -->
+<!-- ╚════════════════════════════════════════════════════════════╝ -->
