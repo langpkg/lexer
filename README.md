@@ -10,10 +10,8 @@
 <div align="center">
     <p align="center" style="font-style:italic; color:gray;">
         Fast, general-purpose lexer for building language tooling.<br>
-        <b>Up to ~2.5x faster than moo on equivalent specs</b>.
-        <br>
     </p>
-    <img data="version" src="https://img.shields.io/badge/v-0.1.5-black"/>
+    <img data="version" src="https://img.shields.io/badge/v-0.1.6-black"/>
     <a href="https://github.com/langpkg"><img src="https://img.shields.io/badge/@-langpkg-black"/></a>
     <br>
     <img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage" />
@@ -66,20 +64,8 @@
     ```
 
     <br>
-    <br>
 
-- ## Benchmark
-
-    ![bench](./assets/img/bench.png)
-
-    > _**To run the benchmark, use: `bun run bench`**_
-
-    > _**To check the benchmark code, read: [`./bench/index.bench.ts`](./bench/index.bench.ts).**_
-
-    <br>
-    <br>
-
-- ## Documentation 📑
+- ## Docs
 
     - ### How it works
 
@@ -156,8 +142,8 @@
         ```ts
         compile({
             IDENT: {
-                match   : /[a-zA-Z_][a-zA-Z0-9_]*/,
-                type    :  keywords({
+                match           : /[a-zA-Z_][a-zA-Z0-9_]*/,
+                type            :  keywords({
                     'kw-if'     : 'if',
                     'kw-else'   : 'else',
                     KW          : ['while', 'for', 'return'],  // multiple keywords, one type
@@ -192,24 +178,12 @@
 
       - #### Token fields
 
-        | Field        | Type     | Description                                               |
-        | ------------ | -------- | --------------------------------------------------------- |
-        | `type`       | `string` | Token type name from the spec                             |
-        | `text`       | `string` | Matched text, transformed if `value()` was set            |
-        | `span`       | `Span`   | Byte position range { start, end }                        |
-        | `toString()` |          | Returns `text`                                            |
-
-    <br>
-    <br>
-
-- ## Credits ❤️
-
-    > Inspired by [moo](https://github.com/no-context/moo) - I kept the same
-    familiar API (`compile`, `keywords`, `reset`, `next`) while replacing the
-    internals with a per-character dispatch table and per-rule sticky regexes,
-    which eliminates alternation backtracking and gives ~3x better throughput.
-
-    > Built as part of the Mine language compiler toolchain.
+        | Field        | Type     | Description                                    |
+        | ------------ | -------- | ---------------------------------------------- |
+        | `type`       | `string` | Token type name from the spec                  |
+        | `text`       | `string` | Matched text, transformed if `value()` was set |
+        | `span`       | `Span`   | Byte position range { start, end }             |
+        | `toString()` |          | Returns `text`                                 |
 
 <!-- ╚════════════════════════════════════════════════════════════╝ -->
 
