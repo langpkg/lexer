@@ -5,7 +5,7 @@
     "lib"                               : ["DOM", "ES2020", "ESNext"],
     "module"                            : "ESNext",
     "moduleResolution"                  : "bundler",
-    "types"                             : ["bun"],
+    "types"                             : ["bun", "node"],
     "allowImportingTsExtensions"        : true,
     "resolveJsonModule"                 : true,
     "declaration"                       : true,
