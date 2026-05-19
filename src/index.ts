@@ -446,26 +446,26 @@
             const code = buf.charCodeAt(pos);
             const slot = code < 128 ? slots[code] : highSlot;
 
-            if (!slot) return this._emit(errorRule, buf[pos], pos);
+            if (!slot) return this.internalEmit(errorRule, buf[pos], pos);
 
             // fast path - single candidate, no loop
             if (slot.rule0 !== undefined) {
                 const re = slot.re0!;
                 const rule = slot.rule0;
-                if (re === null) return this._emit(rule, buf[pos], pos);
+                if (re === null) return this.internalEmit(rule, buf[pos], pos);
                 re.lastIndex = pos;
-                if (re.test(buf)) return this._emit(rule, buf.slice(pos, re.lastIndex), pos);
-                return this._emit(errorRule, buf[pos], pos);
+                if (re.test(buf)) return this.internalEmit(rule, buf.slice(pos, re.lastIndex), pos);
+                return this.internalEmit(errorRule, buf[pos], pos);
             }
 
             // slow path - try candidates in order
             for (const { re, rule } of slot.candidates) {
-                if (re === null) return this._emit(rule, buf[pos], pos);
+                if (re === null) return this.internalEmit(rule, buf[pos], pos);
                 re.lastIndex = pos;
-                if (re.test(buf)) return this._emit(rule, buf.slice(pos, re.lastIndex), pos);
+                if (re.test(buf)) return this.internalEmit(rule, buf.slice(pos, re.lastIndex), pos);
             }
 
-            return this._emit(errorRule, buf[pos], pos);
+            return this.internalEmit(errorRule, buf[pos], pos);
         }
 
         /** Return a human-readable error string with file position. */
@@ -474,7 +474,7 @@
             return `${message} at line ${line} col ${col}`;
         }
 
-        private _emit(rule: CRule, text: string, offset: number): Token {
+        private internalEmit(rule: CRule, text: string, offset: number): Token {
             let lineBreaks = 0, lastNL = -1;
             if (rule.lineBreaks) [lineBreaks, lastNL] = countNL(text);
 
